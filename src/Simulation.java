@@ -14,6 +14,7 @@ public class Simulation {
         Station station1 = new Station(stationList.get(0));
         Station station2 = new Station(stationList.get(2));
 
+
         station1.addPassengers(stationList);
         station1.addPassengers(stationList);
         station1.addPassengers(stationList);

@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.Random;
 
 public class Passenger {
@@ -11,7 +13,7 @@ public class Passenger {
 
     Passenger(int startingStation, ArrayList<Integer> stationList) {
 
-        ArrayList<Integer> stationListCopy = new ArrayList<>(stationList);
+        ArrayList<Integer> stationListCopy = new ArrayList<>();
 
         this.passengerID = counter++;
         this.source = startingStation;
