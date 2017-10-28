@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Simulation {
 
+    //
     //list of all station objects
     static ArrayList<Station> stationList = new ArrayList<>();
     //list of all train objects
