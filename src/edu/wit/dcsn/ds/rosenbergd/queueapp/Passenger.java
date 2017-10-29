@@ -12,11 +12,13 @@ public class Passenger {
     int source;
     int destination;
 
+
+
     //passenger constructor
     //arguments: starting station, list of station locations
-    Passenger(int startingStation, ArrayList<Integer> stationList) {
+    Passenger(int startingStation, ArrayList<Integer> stationLocationList) {
 
-        ArrayList<Integer> stationListCopy = new ArrayList<>(stationList);
+        ArrayList<Integer> stationListCopy = new ArrayList<>(stationLocationList);
 
         //assigns unique ID to passenger
         this.passengerID = counter++;

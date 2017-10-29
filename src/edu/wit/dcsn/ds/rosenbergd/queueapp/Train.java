@@ -1,6 +1,7 @@
 package edu.wit.dcsn.ds.rosenbergd.queueapp;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Moves the train 
@@ -11,69 +12,114 @@ public class Train {
 	
 	ArrayList<Passenger> trainStorage = new ArrayList<>();
 
+	int randomNum = ThreadLocalRandom.current().nextInt(1,  10);
+
 	int trainID;
 	int position;
-//	int currentCapacity;
 	int maxCapacity;
 	static int counter;
-	Station currentStation;
 	boolean inbound = false;
+	Station currentStation;
 
-	public Train(boolean inbound, int position, Passenger startingCapacity){
+	public Train(String direction, int position, int maxCapacity, ArrayList<Integer> stationLocationList){
+
 		this.trainID = counter++;
 		this.position = position;
-		this.trainStorage.add(startingCapacity);
+		this.maxCapacity = maxCapacity;
 
-		if (this.inbound == inbound) {
+		if (direction.equals("inbound")) {
 			this.inbound = true;
+		} else {
+			this.inbound = false;
+		}
+
+		for (int i = 0; i < randomNum; i++) {
+			addPassengers(stationLocationList);
 		}
 	}//end Train
 
-	public void setCurrentStation(Station currentStation) {
-		this.currentStation = currentStation;
+	public int getPosition() {
+		return this.position;
 	}
 
-	public Station getCurrentStation() {
-		return this.currentStation;
+	public int getTrainID() {
+		return this.trainID;
+	}
+
+	public boolean getDirection() {
+		return inbound;
+	}
+
+	public int getMaxCapacity() {
+		return this.maxCapacity;
+	}
+
+	public int getCurrentStation() throws NullPointerException{
+		try {
+			return this.currentStation.stationID;
+		} catch (NullPointerException ex) {
+			return -1;
+		}
 	}
 
 	
-	public void moveTrain(ArrayList<Station> stationCollection, TrainRoute trainRoute){
+	public void moveTrain(TrainRoute trainRoute){
 
-		int track1End = trainRoute.length/2;
-		int track2Start = trainRoute.length/2+1;
+		resetCurrentStation();
 
-		if (trainRoute.style == "circular") {
-			if (this.position == trainRoute.length) {
-				this.position = 0;
+		if (trainRoute.getStyle().equals("circular")) {
+			if (this.inbound) {
+				if (this.position == trainRoute.length) {
+					this.position = 0;
+				}
+				else {
+					this.position++;
+				}
+			} else if (!this.inbound) {
+				if (this.position == 0) {
+					this.position = 20;
+				}
+				else {
+					this.position--;
+				}
 			}
-			else {
-				this.position++;
-			}
-		} else if (trainRoute.style == "linear") {
-			if (this.position == track1End) {
-				this.position = track2Start;
-			} else if (this.position == trainRoute.length) {
-				this.position = 0;
-			} else {
-				this.position++;
-			}
-		}
 
-
-		for (int i = 0; i < stationCollection.size(); i++) {
-			if (this.position == stationCollection.get(i).stationID) {
-				setCurrentStation(stationCollection.get(i));
-				disembark(this.currentStation.getStationID());
-				board(this.currentStation.nextPassenger());
+		} else if (trainRoute.getStyle().equals("linear")) {
+			if (this.inbound) {
+				if (this.position == trainRoute.length) {
+					this.inbound = false;
+					this.position--;
+				}
+				else {
+					this.position++;
+				}
+			} else if (!this.inbound) {
+				if (this.position == 0) {
+					this.inbound = true;
+					this.position++;
+				} else {
+					this.position--;
+				}
 			}
 		}
 	}//end moveTrain
-	
-	public void disembark(int currentStation){
 
+	public void checkIfAtStation(ArrayList<Station> stationList) {
+		for (int i = 0; i < stationList.size(); i++) {
+			if (this.position == stationList.get(i).stationID) {
+				this.currentStation = stationList.get(i);
+				disembark();
+			}
+		}
+	}
+
+	public void resetCurrentStation() {
+		this.currentStation = null;
+	}
+	
+	public void disembark(){
 		for (int i = 0; i < this.trainStorage.size(); i++){
-			if (this.trainStorage.get(i).getPassengerID() == currentStation){
+			if (this.trainStorage.get(i).getPassengerID() == this.currentStation.getStationID()){
 				this.trainStorage.remove(this.trainStorage.get(i));
 			}
 		}//end while
@@ -84,4 +130,17 @@ public class Train {
 			this.trainStorage.add(passenger);
 		}
 	}//end board
+
+	//adds a passenger object to the station queue
+	//arguments: arraylist of station locations
+	public void addPassengers(ArrayList<Integer> stationList) {
+
+		//creates new passenger object
+		//arguments: this station's location, list of station locations
+		Passenger passenger = new Passenger(0, stationList);
+
+		//adds passenger object to queue
+		trainStorage.add(passenger);
+	}
+
 }//end Train class
