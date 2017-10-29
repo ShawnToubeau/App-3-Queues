@@ -14,21 +14,15 @@ public class Station {
     int randomNum = ThreadLocalRandom.current().nextInt(1,  25);
 
     //creates station object, arguments: (stationID, list of stations)
-    Station(int stationID, int[] configStationList){
+    Station(int stationID, ArrayList<Integer> stationLocationList){
 
-        ArrayList<Integer> stationList = new ArrayList<>();
 
         this.stationID = stationID; //stationID serves as station location
-
-        //converts the array of station positions to a arraylist
-        for (int i = 0; i < configStationList.length; i++) {
-            stationList.add(configStationList[i]);
-        }
 
         //call addPassenger() a random number of times
         //arguments: arraylist of station locations
         for (int i = 0; i < randomNum; i++) {
-            addPassengers(stationList);
+            addPassengers(stationLocationList);
         }
     }
 
@@ -38,11 +32,11 @@ public class Station {
 
     //adds a passenger object to the station queue
     //arguments: arraylist of station locations
-    public void addPassengers(ArrayList<Integer> stationList) {
+    public void addPassengers(ArrayList<Integer> stationLocationList) {
 
         //creates new passenger object
         //arguments: this station's location, list of station locations
-        Passenger passenger = new Passenger(this.stationID, stationList);
+        Passenger passenger = new Passenger(this.stationID, stationLocationList);
 
         //adds passenger object to queue
         queue.enqueue(passenger);

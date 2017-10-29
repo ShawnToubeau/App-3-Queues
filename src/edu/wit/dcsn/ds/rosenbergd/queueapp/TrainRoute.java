@@ -12,12 +12,16 @@ public class TrainRoute {
     int length;
     String style;
 
-    public TrainRoute(int length, String style) {
+    public TrainRoute(String style, int length) {
         this.length = length;
         this.style = style;
     }
-    ArrayList<Object> route1 = new ArrayList<>();
-    ArrayList<Object> stationCollection = new ArrayList<>();
-    //collection for trains
-    //collection for stations
+
+    public String getStyle() {
+        return this.style;
+    }
+
+    public int getLength() {
+        return this.length;
+    }
 }
