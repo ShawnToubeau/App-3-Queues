@@ -87,6 +87,8 @@ public class Simulation {
                         System.out.println("    Passenger ID: "+train.trainStorage.get(0).getPassengerID());
                         System.out.println("    Passenger Src: "+train.trainStorage.get(0).getSource());
                         System.out.println("    Passenger Dest: "+train.trainStorage.get(0).getDestination());
+                      //System.out.println("	Passengers Embarking: "+train.getEmbarking.get(0).getEmbarkingCounter());
+                      //System.out.println("	Passengers Disembarking: "+train.getDisembarking.get(0).getDisembarkingCounter());
 
                 train.moveTrain(trainRoute);
 
