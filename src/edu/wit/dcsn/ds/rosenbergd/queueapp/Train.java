@@ -108,7 +108,6 @@ public class Train {
 		for (int i = 0; i < stationList.size(); i++) {
 			if (this.position == stationList.get(i).stationID) {
 				this.currentStation = stationList.get(i);
-				disembark();
 			}
 		}
 	}
@@ -117,18 +116,24 @@ public class Train {
 		this.currentStation = null;
 	}
 	
-	public void disembark(){
+	public int disembark(){
+	    int disembarkCounter = 0;
 		for (int i = 0; i < this.trainStorage.size(); i++){
-			if (this.trainStorage.get(i).getPassengerID() == this.currentStation.getStationID()){
+			if (this.trainStorage.get(i).getDestination() == this.currentStation.getStationID()){
 				this.trainStorage.remove(this.trainStorage.get(i));
+				disembarkCounter++;
 			}
 		}//end while
+        return disembarkCounter;
 	}//end disembark
-	
-	public void board(Passenger passenger){
-		while (this.trainStorage.size() <= this.maxCapacity || this.currentStation.hasQueuedPassengers()){
-			this.trainStorage.add(passenger);
+
+	public int embark(){
+	    int embarkCounter = 0;
+		while (this.trainStorage.size() < this.maxCapacity && this.currentStation.hasQueuedPassengers()){
+			this.trainStorage.add(this.currentStation.nextPassenger());
+			embarkCounter++;
 		}
+		return embarkCounter;
 	}//end board
 
 	//adds a passenger object to the station queue
