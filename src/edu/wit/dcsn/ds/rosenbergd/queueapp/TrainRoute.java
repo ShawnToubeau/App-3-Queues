@@ -12,15 +12,18 @@ public class TrainRoute {
     int length;
     String style;
 
-    public TrainRoute(String style, int length) {
+    public TrainRoute(String style, int length)
+    {
         this.length = length;
         this.style = style;
-    }
+    }//end TrainRoute constructor
 
+    //returns train route style
     public String getStyle() {
         return this.style;
     }
 
+    //returns train route length
     public int getLength() {
         return this.length;
     }

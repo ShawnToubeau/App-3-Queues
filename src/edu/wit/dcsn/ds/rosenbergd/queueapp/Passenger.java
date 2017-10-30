@@ -12,11 +12,10 @@ public class Passenger {
     int source;
     int destination;
 
-
-
     //passenger constructor
     //arguments: starting station, list of station locations
-    Passenger(int startingStation, ArrayList<Integer> stationLocationList) {
+    Passenger(int startingStation, ArrayList<Integer> stationLocationList)
+    {
 
         ArrayList<Integer> stationListCopy = new ArrayList<>(stationLocationList);
 
@@ -30,7 +29,7 @@ public class Passenger {
         stationListCopy.remove(Integer.valueOf(this.source));
         //sets passenger destination as random station location
         this.destination = stationListCopy.get(new Random().nextInt(stationListCopy.size()));
-    }
+    }//end passenger constructor
 
     //gets passenger's ID
     public int getPassengerID() {
@@ -46,5 +45,4 @@ public class Passenger {
     public int getDestination() {
         return this.destination;
     }
-
 }
