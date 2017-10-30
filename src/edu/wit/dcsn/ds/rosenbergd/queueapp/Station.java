@@ -11,7 +11,7 @@ public class Station {
     QueueInterface<Passenger> queue = new ArrayQueue<>();
 
     int stationID;
-    int randomNum = ThreadLocalRandom.current().nextInt(1,  25);
+    int randomNum = ThreadLocalRandom.current().nextInt(1,  5);
 
     //creates station object, arguments: (stationID, list of stations)
     Station(int stationID, ArrayList<Integer> stationLocationList){
