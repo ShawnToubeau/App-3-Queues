@@ -1,15 +1,10 @@
 package edu.wit.dcsn.ds.rosenbergd.queueapp;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
-
 public class Simulation {
-
     //list of all station objects
     static ArrayList<Station> stationObjectList = new ArrayList<>();
     //list of all train objects
@@ -17,20 +12,23 @@ public class Simulation {
     //list of all station locations
     static ArrayList<Integer> stationLocationList = new ArrayList<>();
 
-    public static void main(String[] args) throws FileNotFoundException, IOException{
-
+    public static void main(String[] args) throws FileNotFoundException, IOException
+    {
+        //random number variable
         int randomNum = ThreadLocalRandom.current().nextInt(1,  2);
 
-        //writer for the logger
-        BufferedWriter writer = new BufferedWriter(new FileWriter("logger.txt"));
+        //buffer writer for the logger
+//        BufferedWriter writer = new BufferedWriter(new FileWriter("logger.txt"));
+        PrintWriter writer = new PrintWriter("TrainSimulation.log");
 
         //configuration settings
         Configuration configuration = new Configuration("./TrainSimulation.config");
 
-        //adds station locations from config to station location list
-        for (int index : configuration.getStations()) {
+        //adds station locations from configuration object to station location list
+        for (int index : configuration.getStations())
+        {
             stationLocationList.add(index);
-        }
+        }//end for
 
         //sets number of ticks
         int numOfTicks = configuration.getTicks();
@@ -43,87 +41,114 @@ public class Simulation {
         //creates train route
         TrainRoute trainRoute = new TrainRoute(routeStyle, routeLength);
 
-        //creates stations
-        for (int i = 0; i < configuration.getStations().length; i++) {
+        //iterates through all the stations specified in configuration
+        for (int i = 0; i < configuration.getStations().length; i++)
+        {
             int currentStationLocation = configuration.getStations()[i];
+            //generates a new station object
+            //arguments: current station location, list of all station locations
             generateStations(currentStationLocation, stationLocationList);
-        }
+        }//end for
 
-        //creates trains
-        for (int i = 0; i < configuration.getTrains().length; i++) {
+        //iterates through all the trains specified in configuration
+        for (int i = 0; i < configuration.getTrains().length; i++)
+        {
+
             String direction = configuration.getTrains()[i].direction.toString().toLowerCase();
             int location = configuration.getTrains()[i].location;
             int capacity = configuration.getTrains()[i].capacity;
+            //generates a new train object
+            //arguments: train direction, location, max capacity, list of all station locations
             generateTrains(direction, location, capacity, stationLocationList);
-        }
+        }//end for
 
         //main simulation
-        while (numOfTicks >= 0) {
-            //do stuff
+        while (numOfTicks >= 0)
+        {
+            writer.print("\n-----Running Simulation-----\n");
+//            for (int i = 0; i < stationObjectList.size(); i++)
+//            {
+//                System.out.print(configuration.getStations()[i]+" ");
+//            }//end for
+//            System.out.print("\n");
 
-            System.out.println("\n-----Running Simulation-----\n");
-            for (int i = 0; i < stationObjectList.size(); i++) {
-                System.out.print(configuration.getStations()[i]+" ");
-            }
-            System.out.print("\n");
 
+            //iterates through all the trains
+            for (int i = 0; i < trainObjectList.size(); i++)
+            {
+                //list of removed passenger's IDs
+                ArrayList<Integer> removedPassenger = new ArrayList<>();
+                //list of added passenger's IDs
+                ArrayList<Integer> addedPassenger = new ArrayList<>();
 
-//            for (int i = 0; i < stationList.size(); i++) {
-//                if (stationList.get(i).hasQueuedPassengers()) {
-//                    Passenger queuedPassenger = stationList.get(i).nextPassenger();
-//                    System.out.println("Station #"+stationList.get(i).getStationID());
-//                    System.out.println("  Passenger ID:"+queuedPassenger.getPassengerID());
-//                    System.out.println("    Source "+queuedPassenger.getSource());
-//                    System.out.println("    Destination "+queuedPassenger.getDestination());
-//                } else {
-//                    System.out.println("Station #"+stationList.get(i).getStationID()+" OUT OF PASSENGERS");
-//                }
-//            }
+                //current train object
+                Train currentTrainObject = trainObjectList.get(i);
+                //checks if the train is at a station
+                currentTrainObject.checkIfAtStation(stationObjectList);
+                //run if at a station
+                if (currentTrainObject.currentStation != null)
+                {
+                    //disembarks passengers to station
+                    removedPassenger = currentTrainObject.disembark();
+                    //embarks passengers on to train
+                    addedPassenger = currentTrainObject.embark();
+                }//end if
 
-            for (int i = 0; i < trainObjectList.size(); i++) {
-                int disembarkNum = 0;
-                int embarkNum = 0;
-                Train train = trainObjectList.get(i);
-                train.checkIfAtStation(stationObjectList);
-                if (train.currentStation != null) {
-                    System.out.println("Removed passengers *********"+train.disembark());
-                    System.out.println("Added passengers --------- "+train.embark());
-//                    while (train.trainStorage.size() < train.maxCapacity && train.currentStation.hasQueuedPassengers()) {
-//                        train.trainStorage.add(train.currentStation.nextPassenger());
-//                        embarkNum++;
-//                    }
+                System.out.println("Train #"+currentTrainObject.getTrainID()+" is at location "+currentTrainObject.getPosition());
+                if (currentTrainObject.getCurrentStation() != -1) {
+                    System.out.println("Train #"+currentTrainObject.getTrainID()+" is at station "+currentTrainObject.getCurrentStation());
                 }
-                    System.out.println("Train ID: "+train.getTrainID());
-                    System.out.println("    Position:"+train.getPosition());
-                    System.out.println("    Inbound? "+train.getDirection());
-                    System.out.println("    Max Capacity "+train.getMaxCapacity());
-                    System.out.println("    Current Capacity "+train.trainStorage.size());
-                    System.out.println("    Current Station "+train.getCurrentStation());
 
+                writer.print("\n\nTrain ID#"+currentTrainObject.getTrainID());
+                writer.print("\n    Position:"+currentTrainObject.getPosition());
+                writer.print("\n    Inbound? "+currentTrainObject.getDirection());
+                writer.print("\n    Max Capacity "+currentTrainObject.getMaxCapacity());
+                writer.print("\n    Current Capacity "+currentTrainObject.trainStorage.size());
+                writer.print("\n    Current Station "+currentTrainObject.getCurrentStation());
+                writer.print("\n        Removing Passengers..");
+                writer.print("\n            Removed Passenger #"+removedPassenger);
+                writer.print("\n        Adding Passengers..");
+                writer.print("\n            Added Passenger #"+addedPassenger);
 
-                train.moveTrain(trainRoute);
-            }
+                //moves the train one space
+                currentTrainObject.moveTrain(trainRoute);
+            }//end for
 
-            for (int i = 0; i < stationObjectList.size(); i++) {
-                for (int j = 0; j < randomNum; j++) {
+            //iterates through all the stations
+            for (int i = 0; i < stationObjectList.size(); i++)
+            {
+                //executes a random number of times
+                for (int j = 0; j < randomNum; j++)
+                {
+                    //adds a new passenger to the currently selected stations
                     stationObjectList.get(i).addPassengers(stationLocationList);
-                }
-            }
+                }//end for
+            }//end for
 
+            //decrements the number of ticks
             numOfTicks--;
-        }
+            writer.print("\n\n-----End Simulation-----\n");
+        }//end while
+
+        //finishes writing to the log
         writer.close();
     }
 
-    //creates station objects, adds them to list
+    //method for creating new stations
     public static void generateStations(int stationLocation, ArrayList<Integer> stationLocationList) {
+        //creates station objects
+        //arguments: station location, list of all the station locations
         Station station = new Station(stationLocation, stationLocationList);
+        //add station object to object list
         stationObjectList.add(station);
     }
 
+    //method for creating new trains
     public static void generateTrains(String direction, int location, int capacity, ArrayList<Integer> stationLocationList) {
+        //creates train objects, adds them to trainObjectList
+        //arguments: train direction, location, max capacity, list of all the station locations
         Train train = new Train(direction, location, capacity, stationLocationList);
+        //add train object to object list
         trainObjectList.add(train);
     }
-
 }
